@@ -109,7 +109,7 @@ services:
     image: chayan-webapp:0.1.0
     ports:
       # - '5173:5173'
-      - '4000:80'
+      - '80:80'
     depends_on:
       - api-server
   evaluator:
