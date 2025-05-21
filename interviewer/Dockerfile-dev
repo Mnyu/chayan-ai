@@ -1,0 +1,16 @@
+FROM node:lts-slim
+
+ENV NODE_ENV=development
+WORKDIR /usr/src/app
+
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=bind,source=vite.config.js,target=vite.config.js \
+    --mount=type=bind,source=eslint.config.js,target=eslint.config.js \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --save --save-exact --save-dev
+
+COPY . .
+
+EXPOSE 5173
+CMD ["npm","run","dev"]

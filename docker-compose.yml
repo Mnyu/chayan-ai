@@ -1,0 +1,180 @@
+services:
+  db:
+    hostname: db
+    container_name: db
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      - 'POSTGRES_DB=${POSTGRES_DB}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 2s
+  rabbitmq:
+    hostname: rabbitmq
+    container_name: rabbitmq
+    image: rabbitmq:4.1.0-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - 'RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}'
+      - 'RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}'
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+  minio:
+    hostname: minio
+    container_name: minio
+    image: minio/minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - 'MINIO_ROOT_USER=${MINIO_ROOT_USER}'
+      - 'MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}'
+      # - 'MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}'
+      # - 'MINIO_SECRET_KEY=${MINIO_SECRET_KEY}'
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+  api-server:
+    hostname: api-server
+    container_name: api-server
+    build: api-server
+    image: chayan-api-server:0.1.0
+    ports:
+      - '8181:8181'
+    environment:
+      - 'POSTGRES_HOST=${POSTGRES_HOST}'
+      - 'POSTGRES_PORT=${POSTGRES_PORT}'
+      - 'POSTGRES_DB=${POSTGRES_DB}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'LIVEKIT_URL=${LIVEKIT_URL}'
+      - 'LIVEKIT_API_KEY=${LIVEKIT_API_KEY}'
+      - 'LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}'
+      - 'LIVEKIT_ROOM_NAME=${LIVEKIT_ROOM_NAME}'
+      - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
+      - 'OPENAI_RESUME_SUMMARY_MODEL=${OPENAI_RESUME_SUMMARY_MODEL}'
+      - 'OPENAI_EVALUATE_INTERVIEW_MODEL=${OPENAI_EVALUATE_INTERVIEW_MODEL}'
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_PORT=${RABBITMQ_PORT}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'RABBITMQ_RESUME_SUMMARY_QUEUE=${RABBITMQ_RESUME_SUMMARY_QUEUE}'
+      - 'MINIO_ENDPOINT=${MINIO_ENDPOINT}'
+      - 'MINIO_ROOT_USER=${MINIO_ROOT_USER}'
+      - 'MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}'
+      - 'MINIO_RESUME_BUCKET=${MINIO_RESUME_BUCKET}'
+      - 'API_SERVER_HTTP_ADDR=${API_SERVER_HTTP_ADDR}'
+      - 'API_SERVER_ADMIN_USERNAME=${API_SERVER_ADMIN_USERNAME}'
+      - 'API_SERVER_ADMIN_PASSWORD=${API_SERVER_ADMIN_PASSWORD}'
+      - 'API_SERVER_USER_PASSWORD=${API_SERVER_USER_PASSWORD}'
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+  interviewer:
+    hostname: interviewer
+    container_name: interviewer
+    build: agent
+    image: chayan-interviewer:0.1.0
+    environment:
+      - 'POSTGRES_HOST=${POSTGRES_HOST}'
+      - 'POSTGRES_DB=${POSTGRES_DB}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
+      - 'LIVEKIT_URL=${LIVEKIT_URL}'
+      - 'LIVEKIT_API_KEY=${LIVEKIT_API_KEY}'
+      - 'LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}'
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_PORT=${RABBITMQ_PORT}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'RABBITMQ_EVALUATE_INTERVIEW_QUEUE=${RABBITMQ_EVALUATE_INTERVIEW_QUEUE}'
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+  webapp:
+    hostname: webapp
+    container_name: webapp
+    build: interviewer
+    image: chayan-webapp:0.1.0
+    ports:
+      # - '5173:5173'
+      - '4000:80'
+    depends_on:
+      - api-server
+  evaluator:
+    hostname: evaluator
+    container_name: evaluator
+    build: evaluator
+    image: chayan-evaluator:0.1.0
+    environment:
+      - 'POSTGRES_HOST=${POSTGRES_HOST}'
+      - 'POSTGRES_PORT=${POSTGRES_PORT}'
+      - 'POSTGRES_DB=${POSTGRES_DB}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
+      - 'OPENAI_EVALUATE_INTERVIEW_MODEL=${OPENAI_EVALUATE_INTERVIEW_MODEL}'
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_PORT=${RABBITMQ_PORT}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'RABBITMQ_EVALUATE_INTERVIEW_QUEUE=${RABBITMQ_EVALUATE_INTERVIEW_QUEUE}'
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+  summarizer:
+    hostname: summarizer
+    container_name: summarizer
+    build: summarizer
+    image: chayan-summarizer:0.1.0
+    environment:
+      - 'POSTGRES_HOST=${POSTGRES_HOST}'
+      - 'POSTGRES_PORT=${POSTGRES_PORT}'
+      - 'POSTGRES_DB=${POSTGRES_DB}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
+      - 'OPENAI_RESUME_SUMMARY_MODEL=${OPENAI_RESUME_SUMMARY_MODEL}'
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_PORT=${RABBITMQ_PORT}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'RABBITMQ_RESUME_SUMMARY_QUEUE=${RABBITMQ_RESUME_SUMMARY_QUEUE}'
+      - 'MINIO_ENDPOINT=${MINIO_ENDPOINT}'
+      - 'MINIO_ROOT_USER=${MINIO_ROOT_USER}'
+      - 'MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}'
+      - 'MINIO_RESUME_BUCKET=${MINIO_RESUME_BUCKET}'
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+  pgadmin:
+    hostname: pgadmin
+    container_name: pgadmin
+    image: dpage/pgadmin4:9
+    environment:
+      - 'PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}'
+      - 'PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}'
+    ports:
+      - '5431:80'
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+volumes:
+  pgdata:
+  rabbitmq_data:
+  minio_data:

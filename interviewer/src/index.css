@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+:root {
+  --lk-theme-color: #ff7a45;
+}
+
+body {
+  overflow: hidden;
+}
