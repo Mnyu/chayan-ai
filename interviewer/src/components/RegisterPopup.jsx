@@ -62,13 +62,14 @@ const RegisterPopup = ({ isModalOpen, setIsModalOpen, setInterviews }) => {
         const data = await res.json();
         setFileName('');
         setFilePath('');
+        setLoading(false);
         return true;
       } catch (err) {
         console.error(err);
+        setLoading(false);
         return false;
       }
     }
-    setLoading(false);
   };
 
   const handleCancel = async () => {
