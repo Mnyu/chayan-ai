@@ -54,12 +54,12 @@ func (i *InterviewService) Register(name string, fileName string, filePath strin
 	if err != nil {
 		return nil, err
 	}
-	resumeSummarMsg := &model.ResumeSummaryMsg{InterviewId: interviewId, ResumePathPrefix: ""}
-	err = i.QService.SendMessage(i.Channel, i.QueueName, resumeSummarMsg)
+	interview, err := i.InterviewRepository.CreateInterview(interviewId, name, filePath)
 	if err != nil {
 		return nil, err
 	}
-	interview, err := i.InterviewRepository.CreateInterview(interviewId, name, filePath)
+	resumeSummarMsg := &model.ResumeSummaryMsg{InterviewId: interviewId, ResumePathPrefix: ""}
+	err = i.QService.SendMessage(i.Channel, i.QueueName, resumeSummarMsg)
 	if err != nil {
 		return nil, err
 	}
