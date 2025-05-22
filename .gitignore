@@ -6,6 +6,7 @@
 *.iml
 .vscode
 
+ssl
 
 # Environment File
 .env
