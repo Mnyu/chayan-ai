@@ -24,8 +24,12 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy self signed certs
-COPY ssl/chakrview.crt /etc/ssl/chakrview.crt
-COPY ssl/chakrview.key /etc/ssl/chakrview.key
+# COPY ssl/chakrview.crt /etc/ssl/chakrview.crt
+# COPY ssl/chakrview.key /etc/ssl/chakrview.key
+
+# Copy certbot certs
+COPY ssl/certbot/fullchain.pem /etc/ssl/fullchain.pem
+COPY ssl/certbot/privkey.pem /etc/ssl/privkey.pem
 
 # Expose port
 EXPOSE 80
