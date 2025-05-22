@@ -110,6 +110,7 @@ services:
     ports:
       # - '5173:5173'
       - '80:80'
+      - '443:443'
     depends_on:
       - api-server
   evaluator:
