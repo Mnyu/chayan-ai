@@ -11,6 +11,10 @@ const Home = ({ isLoggedIn }) => {
     isLoggedIn ? navigate('/interviews') : navigate('/login');
   };
 
+  const openDemo = () => {
+    window.open('https://www.youtube.com/watch?v=2Jxk8iZWjJM');
+  };
+
   return (
     <Content style={{ overflowY: 'auto' }} className='h-full'>
       <Flex justify='space-around' className='' style={{ padding: 20, marginTop: 30 }}>
@@ -34,13 +38,18 @@ const Home = ({ isLoggedIn }) => {
           <Typography.Paragraph style={{ fontSize: 18, marginTop: 0 }}>
             Simply mention the role, upload your resume and voila.
           </Typography.Paragraph>
-          <Button
-            type='primary'
-            onClick={getStarted}
-            style={{ width: '40%', marginTop: 10, padding: 20, fontSize: 18 }}
-          >
-            Get Started
-          </Button>
+          <Flex gap={10}>
+            <Button
+              type='primary'
+              onClick={getStarted}
+              style={{ width: '40%', marginTop: 10, padding: 20, fontSize: 18 }}
+            >
+              Get Started
+            </Button>
+            <Button onClick={openDemo} style={{ width: '40%', marginTop: 10, padding: 20, fontSize: 18 }}>
+              Demo
+            </Button>
+          </Flex>
         </Flex>
         <Flex className='h-1/2'>
           <Image height={400} src='./background.jpg' className='rounded-4xl' />
