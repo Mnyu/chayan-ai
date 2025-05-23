@@ -28,8 +28,12 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # COPY ssl/chakrview.key /etc/ssl/chakrview.key
 
 # Copy certbot certs
-COPY ssl/certbot/fullchain.pem /etc/ssl/fullchain.pem
-COPY ssl/certbot/privkey.pem /etc/ssl/privkey.pem
+# COPY ssl/certbot/fullchain.pem /etc/ssl/fullchain.pem
+# COPY ssl/certbot/privkey.pem /etc/ssl/privkey.pem
+
+# Copy sslforfree SSL Certificates
+COPY ssl/sslforfree/certificate.crt /etc/ssl/certificate.crt
+COPY ssl/sslforfree/private.key /etc/ssl/private.key
 
 # Expose port
 EXPOSE 80
