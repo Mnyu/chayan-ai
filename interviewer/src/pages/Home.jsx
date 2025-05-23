@@ -52,7 +52,7 @@ const Home = ({ isLoggedIn }) => {
           </Flex>
         </Flex>
         <Flex className='h-1/2'>
-          <Image height={400} src='./background.jpg' className='rounded-4xl' />
+          <Image height={400} src='./background.jpg' className='rounded-4xl' preview={false} />
         </Flex>
       </Flex>
       <Row gutter={[16, 16]} style={{ padding: 20, marginTop: 5 }}>
