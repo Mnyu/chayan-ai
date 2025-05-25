@@ -26,6 +26,13 @@ func (this *UploadController) SaveFile() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Only PDF files are allowed"})
 			return
 		}
+
+		maxFileSize := int64(300 * 1024) // Maximum file size allowed (e.g., 300KB)
+		if file.Size > maxFileSize {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Size of resume cannot be greater than 300KB"})
+			return
+		}
+
 		savePath := filepath.Join("uploads", file.Filename)
 		if err := c.SaveUploadedFile(file, savePath); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save the file"})

@@ -24,9 +24,11 @@ const RegisterPopup = ({ isModalOpen, setIsModalOpen, setInterviews }) => {
   const [filePath, setFilePath] = useState('');
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const [errMessage, setErrMessage] = useState('');
 
   const handleUpload = async (options) => {
     setLoading(true);
+    setErrMessage('');
     const { file, onSuccess, onError } = options;
     const formData = new FormData();
     formData.append('file', file);
@@ -36,6 +38,10 @@ const RegisterPopup = ({ isModalOpen, setIsModalOpen, setInterviews }) => {
         body: formData,
       });
       if (!resp.ok) {
+        const data = await resp.json();
+        if (data && data.error) {
+          throw new Error(data.error);
+        }
         throw new Error('Resume upload failed');
       }
       const data = await resp.json();
@@ -43,16 +49,17 @@ const RegisterPopup = ({ isModalOpen, setIsModalOpen, setInterviews }) => {
       setFilePath(data.filePath);
       onSuccess?.(data, new XMLHttpRequest());
     } catch (err) {
-      console.error(err);
+      console.log(err);
+      setErrMessage(err.message);
       onError?.(err);
     }
     setLoading(false);
   };
 
   const handleRemove = async () => {
-    setLoading(true);
     if (fileName) {
       try {
+        setLoading(true);
         const res = await fetch(`/api/delete/?fileName=${encodeURIComponent(fileName)}`, {
           method: 'DELETE',
         });
@@ -86,6 +93,7 @@ const RegisterPopup = ({ isModalOpen, setIsModalOpen, setInterviews }) => {
     setFileName('');
     setFilePath('');
     setInterviewId(null);
+    setErrMessage('');
     form.resetFields();
     setLoading(false);
   };
@@ -171,11 +179,11 @@ const RegisterPopup = ({ isModalOpen, setIsModalOpen, setInterviews }) => {
                 </Upload>
               )}
             </Form.Item>
-            {/* <Form.Item label=' ' name='btn' colon={false}>
-            <Button type='primary' htmlType='submit' disabled={interview.id != ''}>
-              Register
-            </Button>
-          </Form.Item> */}
+            {errMessage && (
+              <Form.Item label=' ' name='btn' colon={false}>
+                <Typography.Text type='danger'>{errMessage}</Typography.Text>
+              </Form.Item>
+            )}
           </Form>
           {interviewId && (
             <Result
