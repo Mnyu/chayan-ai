@@ -22,6 +22,8 @@ cd chayan-ai
 
 Create .env file by by creating a copy of .env.example and putting in the respective values, keys, urls for livekit, openai, rabbitmq and postgres.
 
+NOTE : If you are making changes in host or port properties in the .env file, make sure they are in sync with the docker-compose.yml file.
+
 ### Step 3: Build docker images:
 
 ```shell
