@@ -27,11 +27,17 @@ const Home = ({ isLoggedIn }) => {
           </Typography.Title>
           <Typography.Title style={{ marginTop: 0 }}>Interviews</Typography.Title>
           <Typography.Paragraph style={{ fontSize: 18, marginTop: 5, marginBottom: 5 }}>
+            Master your interviews with real-time mock interviews powered by cutting-edge AI.
+          </Typography.Paragraph>
+          <Typography.Paragraph style={{ fontSize: 18, marginTop: 0, marginBottom: 5 }}>
+            Crush nervous energy, boost confidence, and walk in ready to win.
+          </Typography.Paragraph>
+          {/* <Typography.Paragraph style={{ fontSize: 18, marginTop: 5, marginBottom: 5 }}>
             Prepare for your interviews with real-time virtual audio mock interviews
           </Typography.Paragraph>
           <Typography.Paragraph style={{ fontSize: 18, marginTop: 0, marginBottom: 5 }}>
             with the world's most advanced AI. Say goodbye to interview performance anxiety.
-          </Typography.Paragraph>
+          </Typography.Paragraph> */}
           <Typography.Paragraph style={{ fontSize: 18, marginTop: 0, marginBottom: 5 }}>
             Get detailed feedback on your interview answers with powerful suggestions to improve them.
           </Typography.Paragraph>
@@ -70,10 +76,14 @@ const Home = ({ isLoggedIn }) => {
               }
               description={
                 <Flex justify='center'>
-                  <Typography.Text type='secondary' style={{ fontSize: 15 }}>
+                  {/* <Typography.Text type='secondary' style={{ fontSize: 15 }}>
                     Speak directly with our AI bot for a near realtime interview experience. Immerse yourself in a truly
                     realistic interview environment that mirrors the challenges and nuances of face-to-face
                     interactions.
+                  </Typography.Text> */}
+                  <Typography.Text type='secondary' style={{ fontSize: 15 }}>
+                    Talk directly with our AI bot for a near real-time interview experience. Step into a lifelike
+                    interview setting that captures the feel and complexity of an in-person interview.
                   </Typography.Text>
                 </Flex>
               }
@@ -96,8 +106,7 @@ const Home = ({ isLoggedIn }) => {
                 <Flex justify='center'>
                   <Typography.Text type='secondary' style={{ fontSize: 15 }}>
                     Receive detailed rated feedback on your projects, technical skills and communication skills. Our AI
-                    will analyze every response and provide valuable guidelines to help you refine your interview
-                    techniques.
+                    will analyze every response and provide valuable guidelines to sharpen your interview skills.
                   </Typography.Text>
                 </Flex>
               }
@@ -119,10 +128,14 @@ const Home = ({ isLoggedIn }) => {
               }
               description={
                 <Flex justify='center'>
-                  <Typography.Text type='secondary' style={{ fontSize: 15 }}>
+                  {/* <Typography.Text type='secondary' style={{ fontSize: 15 }}>
                     Review the complete transcript of your interview and identify key areas of improvement.
                     Significantly improve your communication skills. Bring more structure, fluency, and clarity to your
                     answers.
+                  </Typography.Text> */}
+                  <Typography.Text type='secondary' style={{ fontSize: 15 }}>
+                    Go through the full transcript of your interview to spot key areas for improvement. Enhance your
+                    communication skills by adding structure, fluency, and clarity to your responses.
                   </Typography.Text>
                 </Flex>
               }
